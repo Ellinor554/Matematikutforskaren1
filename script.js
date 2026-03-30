@@ -3496,446 +3496,101 @@
         if (decToolVisible.numberline) decRenderNL();
     }
 
-    // ===================== UPPSTÄLLNING =====================
-    let uppMode           = 'addition';
-    let uppShowBasmaterial = true;
-    let uppShowDelning    = false;
-    let uppShowRattning   = false;
+// ===================== UPPSTÄLLNING =====================
+let uppstallningMode = 'addition';
 
-    const UPP_COL_IDS  = ['T', 'H', 'Ti', 'E'];
-    const UPP_COL_KEYS = ['tusental', 'hundratal', 'tiotal', 'ental'];
+function initUppstallning() {
+    renderUppstallning();
+}
 
-    /** Return [T, H, Ti, E] digit values for num=1 or num=2 from the algo grid inputs. */
-    function uppGetDigitsForNum(num) {
-        return [0, 1, 2, 3].map(ci => {
-            const el = document.querySelector('.upp-num-input[data-num="' + num + '"][data-col="' + ci + '"]');
-            return el ? (parseInt(el.value, 10) || 0) : 0;
-        });
+function setUppstallningMode(mode) {
+    uppstallningMode = mode;
+    renderUppstallning();
+}
+
+function renderUppstallning() {
+    const container = document.getElementById('uppstallning-grid-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const table = document.createElement('table');
+    table.className = 'mx-auto border-separate';
+    table.style.borderSpacing = '10px';
+
+    const labels = ['Tusental', 'Hundratal', 'Tiotal', 'Ental'];
+    const shortLabels = ['T', 'H', 'Ti', 'E'];
+
+    // 1. RAD FÖR MINNESSIFFROR / VÄXLING (+10)
+    const rowMemory = document.createElement('tr');
+    for (let i = 0; i < 4; i++) {
+        const td = document.createElement('td');
+        td.className = 'text-center align-bottom h-12';
+        
+        // Addition: Visa inte ruta över Ental (index 3)
+        if (uppstallningMode === 'addition' && i === 3) {
+            // Tomt över entalen i addition
+        } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 2;
+            // Olika färger beroende på mode
+            input.className = `w-10 h-10 text-center border-2 rounded-lg font-bold transition-all ${
+                uppstallningMode === 'addition' 
+                ? 'border-red-200 text-red-600 focus:border-red-500' 
+                : 'border-blue-200 text-blue-600 focus:border-blue-500'
+            }`;
+            input.placeholder = uppstallningMode === 'subtraktion' ? '+10' : '';
+            td.appendChild(input);
+        }
+        rowMemory.appendChild(td);
     }
+    table.appendChild(rowMemory);
 
-    /** Re-render all concrete blocks based on current algo-grid inputs. */
-    function uppSyncBlocks() {
-        const num1 = uppGetDigitsForNum(1);
-        const num2 = uppGetDigitsForNum(2);
-
-        UPP_COL_IDS.forEach(function(id, ci) {
-            const col = document.getElementById('upp-col-' + id);
-            if (!col) return;
-            col.innerHTML = '';
-
-            const key = UPP_COL_KEYS[ci];
-            const n1 = num1[ci];
-            const n2 = num2[ci];
-
-            // Num-1 blocks
-            if (n1 > 0) {
-                const section = document.createElement('div');
-                section.className = 'upp-num1-blocks';
-                for (let j = 0; j < n1; j++) {
-                    const el = document.createElement('div');
-                    el.className = 'upp-block-item';
-                    if (uppMode === 'subtraction' && ci < 3) {
-                        el.classList.add('borrowable');
-                        (function(colIdx, elem, sec) {
-                            elem.addEventListener('click', function() { uppBorrowBlock(colIdx, elem, sec); });
-                        })(ci, el, section);
-                    }
-                    el.innerHTML = uppSmallBlockSVG(key);
-                    section.appendChild(el);
-                }
-                col.appendChild(section);
+    // 2. RADER FÖR TALEN (TVÅ RADER)
+    for (let r = 0; r < 2; r++) {
+        const row = document.createElement('tr');
+        for (let i = 0; i < 4; i++) {
+            const td = document.createElement('td');
+            td.className = 'relative p-1';
+            
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'w-16 h-16 text-3xl text-center border-2 border-gray-300 rounded-xl font-bold focus:border-soft-blue outline-none';
+            
+            // Vid subtraktion: Lägg till klick-funktion för att dra ett streck (växla)
+            if (uppstallningMode === 'subtraktion') {
+                input.addEventListener('click', function() {
+                    this.classList.toggle('line-through');
+                    this.classList.toggle('text-red-500');
+                });
+                input.title = "Klicka för att markera som växlad/lånad";
             }
 
-            // Separator + Num-2 blocks (addition only)
-            if (uppMode === 'addition' && n2 > 0) {
-                const sep = document.createElement('div');
-                sep.className = 'upp-blocks-separator';
-                col.appendChild(sep);
-
-                const section2 = document.createElement('div');
-                section2.className = 'upp-num2-blocks';
-                for (let j = 0; j < n2; j++) {
-                    const el = document.createElement('div');
-                    el.className = 'upp-block-item';
-                    el.innerHTML = uppSmallBlockSVG(key);
-                    section2.appendChild(el);
-                }
-                col.appendChild(section2);
-            }
-        });
-
-        uppValidateIfOn();
-    }
-
-    /** Return smaller SVG markup for a block type (used on the concrete side). */
-    function uppSmallBlockSVG(type) {
-        if (type === 'ental') {
-            return '<svg viewBox="0 0 30 33" width="22" height="24" style="display:block">' +
-                '<polygon points="15,2 28,9 15,16 2,9" fill="#EF9A9A" stroke="#C62828" stroke-width="1"/>' +
-                '<polygon points="2,9 2,23 15,30 15,16" fill="#C62828" stroke="#C62828" stroke-width="1"/>' +
-                '<polygon points="15,16 28,9 28,23 15,30" fill="#E53935" stroke="#C62828" stroke-width="1"/>' +
-                '</svg>';
+            td.appendChild(input);
+            row.appendChild(td);
         }
-        if (type === 'tiotal') {
-            let lines = '';
-            for (let i = 1; i <= 9; i++) {
-                lines += '<line x1="' + (6+5*i) + '" y1="' + (1+2.5*i) + '" x2="' + (1+5*i) + '" y2="' + (3.5+2.5*i) + '" stroke="#92700A" stroke-width="0.6"/>';
-                lines += '<line x1="' + (6+5*i) + '" y1="' + (6+2.5*i) + '" x2="' + (6+5*i) + '" y2="' + (1+2.5*i) + '" stroke="#92700A" stroke-width="0.6"/>';
-            }
-            return '<svg viewBox="0 0 58 35" width="58" height="35" style="display:block">' +
-                '<polygon points="56,31 51,33.5 51,28.5 56,26" fill="#F57F17" stroke="#92700A" stroke-width="0.8"/>' +
-                '<polygon points="1,8.5 51,33.5 56,31 6,6" fill="#E65100" stroke="#92700A" stroke-width="0.8"/>' +
-                '<polygon points="6,6 56,31 56,26 6,1" fill="#F9A825" stroke="#92700A" stroke-width="0.8"/>' +
-                '<polygon points="6,1 56,26 51,28.5 1,3.5" fill="#FFD54F" stroke="#92700A" stroke-width="0.8"/>' +
-                '<polygon points="6,1 1,3.5 1,8.5 6,6" fill="#F57F17" stroke="#92700A" stroke-width="0.8"/>' +
-                lines + '</svg>';
-        }
-        if (type === 'hundratal') {
-            let lines = '';
-            for (let i = 1; i <= 9; i++) {
-                lines += '<line x1="' + (60+6*i) + '" y1="' + (1+3*i) + '" x2="' + (6*i) + '" y2="' + (31+3*i) + '" stroke="#2E7D32" stroke-width="0.5"/>';
-                lines += '<line x1="' + (60-6*i) + '" y1="' + (1+3*i) + '" x2="' + (120-6*i) + '" y2="' + (31+3*i) + '" stroke="#2E7D32" stroke-width="0.5"/>';
-            }
-            return '<svg viewBox="0 0 121 68" width="61" height="34" style="display:block">' +
-                '<polygon points="120,37 60,67 60,61 120,31" fill="#2E7D32" stroke="#2E7D32" stroke-width="0.8"/>' +
-                '<polygon points="0,31 0,37 60,67 60,61" fill="#388E3C" stroke="#2E7D32" stroke-width="0.8"/>' +
-                '<polygon points="60,1 120,31 60,61 0,31" fill="#81C784" stroke="#2E7D32" stroke-width="0.8"/>' +
-                lines + '</svg>';
-        }
-        if (type === 'tusental') {
-            let lines = '';
-            for (let i = 1; i <= 9; i++) {
-                lines += '<line x1="' + (60+6*i) + '" y1="' + (1+3*i) + '" x2="' + (6*i) + '" y2="' + (31+3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
-                lines += '<line x1="' + (60-6*i) + '" y1="' + (1+3*i) + '" x2="' + (120-6*i) + '" y2="' + (31+3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
-                lines += '<line x1="' + (6*i) + '" y1="' + (31+3*i) + '" x2="' + (6*i) + '" y2="' + (91+3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
-                lines += '<line x1="0" y1="' + (31+6*i) + '" x2="60" y2="' + (61+6*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
-                lines += '<line x1="' + (60+6*i) + '" y1="' + (61-3*i) + '" x2="' + (60+6*i) + '" y2="' + (121-3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
-                lines += '<line x1="60" y1="' + (61+6*i) + '" x2="120" y2="' + (31+6*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
-            }
-            return '<svg viewBox="0 0 121 122" width="61" height="61" style="display:block">' +
-                '<polygon points="120,91 60,121 60,61 120,31" fill="#1565C0" stroke="#1565C0" stroke-width="0.8"/>' +
-                '<polygon points="0,31 0,91 60,121 60,61" fill="#1E88E5" stroke="#1565C0" stroke-width="0.8"/>' +
-                '<polygon points="60,1 120,31 60,61 0,31" fill="#64B5F6" stroke="#1565C0" stroke-width="0.8"/>' +
-                lines + '</svg>';
-        }
-        return '';
+        table.appendChild(row);
     }
 
-    /**
-     * Borrow: remove one block from colIdx, animate split, add 10 blocks to colIdx+1.
-     * Also marks the corresponding num-1 digit in the abstract side.
-     */
-    function uppBorrowBlock(colIdx, element, container) {
-        if (uppMode !== 'subtraction') return;
-        if (colIdx >= 3) return;
-
-        var nextColIdx = colIdx + 1;
-        var nextId     = UPP_COL_IDS[nextColIdx];
-        var nextKey    = UPP_COL_KEYS[nextColIdx];
-        var nextColEl  = document.getElementById('upp-col-' + nextId);
-        if (!nextColEl) return;
-
-        element.classList.add('upp-block-split');
-        setTimeout(function() {
-            element.remove();
-
-            // Find or create a num1-blocks section in the next column
-            var nextSection = nextColEl.querySelector('.upp-num1-blocks');
-            if (!nextSection) {
-                nextSection = document.createElement('div');
-                nextSection.className = 'upp-num1-blocks';
-                nextColEl.prepend(nextSection);
-            }
-
-            // Add 10 blocks of next smaller type
-            for (var i = 0; i < 10; i++) {
-                var newEl = document.createElement('div');
-                newEl.className = 'upp-block-item upp-block-appear';
-                newEl.style.animationDelay = (i * 25) + 'ms';
-                if (nextColIdx < 3) {
-                    newEl.classList.add('borrowable');
-                    (function(ci, el, sec) {
-                        el.addEventListener('click', function() { uppBorrowBlock(ci, el, sec); });
-                    })(nextColIdx, newEl, nextSection);
-                }
-                newEl.innerHTML = uppSmallBlockSVG(nextKey);
-                nextSection.appendChild(newEl);
-            }
-
-            // Mark the abstract-side digit as borrowed-from (strikethrough)
-            var fromInput = document.querySelector('.upp-num-input[data-num="1"][data-col="' + colIdx + '"]');
-            if (fromInput) fromInput.classList.add('borrowed-from');
-
-            // Show "+10" in borrow display row for the receiving column
-            var borrowCell = document.getElementById('upp-borrow-' + nextColIdx);
-            if (borrowCell) {
-                var prev = parseInt(borrowCell.dataset.added || '0', 10);
-                borrowCell.dataset.added = prev + 10;
-                borrowCell.innerHTML = '<span style="color:#2e7d32;font-size:15px;font-weight:900;">+' + (prev + 10) + '</span>';
-            }
-        }, 380);
+    // 3. RESULTATRAD (MED LINJE)
+    const rowResult = document.createElement('tr');
+    for (let i = 0; i < 4; i++) {
+        const td = document.createElement('td');
+        td.className = 'pt-4 border-t-4 border-gray-800';
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'w-16 h-16 text-3xl text-center border-2 border-green-400 bg-green-50 rounded-xl font-bold focus:border-green-600 outline-none';
+        td.appendChild(input);
+        rowResult.appendChild(td);
     }
+    table.appendChild(rowResult);
 
-    /**
-     * "Dela" button handler: split one block of the specified column.
-     * Takes the last block from num1 section in that column and replaces with 10 of next.
-     */
-    function uppDelaCol(colIdx) {
-        if (uppMode !== 'subtraction') return;
-        if (colIdx >= 3) return;
+    container.appendChild(table);
 
-        var id       = UPP_COL_IDS[colIdx];
-        var colEl    = document.getElementById('upp-col-' + id);
-        if (!colEl) return;
-
-        var section = colEl.querySelector('.upp-num1-blocks');
-        if (!section) return;
-        var blocks  = section.querySelectorAll('.upp-block-item:not(.upp-block-split)');
-        if (blocks.length === 0) return;
-
-        var last = blocks[blocks.length - 1];
-        uppBorrowBlock(colIdx, last, section);
-    }
-
-    /** Build (or rebuild) the algorithm grid HTML inside #upp-algo-grid. */
-    function uppBuildAlgoGrid() {
-        var grid = document.getElementById('upp-algo-grid');
-        if (!grid) return;
-        grid.innerHTML = '';
-        var isAdd = uppMode === 'addition';
-
-        function cell(cls) {
-            var d = document.createElement('div');
-            d.className = cls;
-            return d;
-        }
-
-        function numInput(num, ci) {
-            var c = cell('upp-digit-cell');
-            var inp = document.createElement('input');
-            inp.className = 'upp-num-input';
-            inp.dataset.num = String(num);
-            inp.dataset.col = String(ci);
-            inp.maxLength = 1;
-            inp.type = 'text';
-            inp.inputMode = 'numeric';
-            inp.setAttribute('pattern', '[0-9]');
-            inp.addEventListener('input', uppSyncBlocks);
-            inp.addEventListener('keydown', function(e) { uppHandleDigitNav(e, '.upp-num-input[data-num="' + num + '"]', ci); });
-            c.appendChild(inp);
-            return c;
-        }
-
-        function ansInput(ci) {
-            var c = cell('upp-digit-cell');
-            var inp = document.createElement('input');
-            inp.className = 'upp-ans-input';
-            inp.dataset.col = String(ci);
-            inp.maxLength = 1;
-            inp.type = 'text';
-            inp.inputMode = 'numeric';
-            inp.setAttribute('pattern', '[0-9]');
-            inp.addEventListener('input', uppValidateIfOn);
-            inp.addEventListener('keydown', function(e) { uppHandleDigitNav(e, '.upp-ans-input', ci); });
-            c.appendChild(inp);
-            return c;
-        }
-
-        // Row 1: Column headers
-        grid.appendChild(cell('upp-hdr-op'));
-        ['T','H','Ti','E'].forEach(function(lbl) {
-            var d = cell('upp-hdr-cell');
-            d.textContent = lbl;
-            grid.appendChild(d);
-        });
-
-        // Row 2: Carry inputs (addition only)
-        if (isAdd) {
-            grid.appendChild(cell('upp-carry-op'));
-            [0, 1, 2, 3].forEach(function(ci) {
-                var c = cell('upp-carry-cell');
-                var inp = document.createElement('input');
-                inp.className = 'upp-carry-input';
-                inp.dataset.col = String(ci);
-                inp.maxLength = 1;
-                inp.type = 'text';
-                inp.inputMode = 'numeric';
-                inp.title = 'Minnessiffra';
-                inp.setAttribute('pattern', '[0-9]');
-                inp.addEventListener('keydown', function(e) { uppHandleDigitNav(e, '.upp-carry-input', ci); });
-                c.appendChild(inp);
-                grid.appendChild(c);
-            });
-        }
-
-        // Row 3: Number 1
-        grid.appendChild(cell('upp-op-spacer'));
-        [0, 1, 2, 3].forEach(function(ci) { grid.appendChild(numInput(1, ci)); });
-
-        // Row 4: Number 2 with operator sign
-        var opCell = cell('upp-op-cell');
-        var opSpan = document.createElement('span');
-        opSpan.id = 'upp-op-sign';
-        opSpan.textContent = isAdd ? '+' : '\u2212';
-        opCell.appendChild(opSpan);
-        grid.appendChild(opCell);
-        [0, 1, 2, 3].forEach(function(ci) { grid.appendChild(numInput(2, ci)); });
-
-        // Row 5: Horizontal line
-        grid.appendChild(cell('upp-line-cell'));
-
-        // Row 6: Borrow display row (subtraction only)
-        if (!isAdd) {
-            grid.appendChild(cell('upp-borrow-op'));
-            [0, 1, 2, 3].forEach(function(ci) {
-                var c = cell('upp-borrow-cell');
-                c.id = 'upp-borrow-' + ci;
-                grid.appendChild(c);
-            });
-        }
-
-        // Row 7: Answer inputs
-        grid.appendChild(cell('upp-ans-op'));
-        [0, 1, 2, 3].forEach(function(ci) { grid.appendChild(ansInput(ci)); });
-    }
-
-    /** Navigate between digit cells with arrow keys; auto-advance on digit entry. */
-    function uppHandleDigitNav(e, selector, ci) {
-        if (e.key === 'ArrowRight' && ci < 3) {
-            e.preventDefault();
-            var next = document.querySelector(selector + '[data-col="' + (ci + 1) + '"]');
-            if (next) next.focus();
-        } else if (e.key === 'ArrowLeft' && ci > 0) {
-            e.preventDefault();
-            var prev = document.querySelector(selector + '[data-col="' + (ci - 1) + '"]');
-            if (prev) prev.focus();
-        } else if (/^\d$/.test(e.key) && ci < 3) {
-            // Auto-advance after entering a digit
-            setTimeout(function() {
-                var next = document.querySelector(selector + '[data-col="' + (ci + 1) + '"]');
-                if (next) next.focus();
-            }, 40);
-        }
-    }
-
-    /** Switch between addition and subtraction modes. */
-    function uppSetMode(mode) {
-        uppMode = mode;
-
-        var addBtn = document.getElementById('upp-btn-addition');
-        var subBtn = document.getElementById('upp-btn-subtraction');
-        var activeCls   = 'flex-1 py-2 px-2 rounded-xl font-bold text-sm border-2 border-soft-blue bg-soft-blue text-white transition-all';
-        var inactiveCls = 'flex-1 py-2 px-2 rounded-xl font-bold text-sm border-2 border-soft-border bg-soft-bg text-soft-text transition-all';
-        if (addBtn) addBtn.className = mode === 'addition' ? activeCls : inactiveCls;
-        if (subBtn) subBtn.className = mode === 'subtraction' ? activeCls : inactiveCls;
-
-        // Save current number values before rebuild
-        var vals = {1: [], 2: []};
-        [1, 2].forEach(function(n) {
-            vals[n] = [0, 1, 2, 3].map(function(ci) {
-                var el = document.querySelector('.upp-num-input[data-num="' + n + '"][data-col="' + ci + '"]');
-                return el ? el.value : '';
-            });
-        });
-
-        uppBuildAlgoGrid();
-
-        // Restore number values after rebuild
-        [1, 2].forEach(function(n) {
-            [0, 1, 2, 3].forEach(function(ci) {
-                var el = document.querySelector('.upp-num-input[data-num="' + n + '"][data-col="' + ci + '"]');
-                if (el) el.value = vals[n][ci] || '';
-            });
-        });
-
-        uppSyncBlocks();
-    }
-
-    /** Toggle the left (concrete) side visibility. */
-    function uppToggleBasmaterial() {
-        uppShowBasmaterial = document.getElementById('upp-show-basmaterial')?.checked ?? true;
-        var concrete = document.getElementById('upp-concrete-panel');
-        var divider  = concrete ? concrete.nextElementSibling : null;
-        if (concrete) concrete.style.display = uppShowBasmaterial ? '' : 'none';
-        if (divider && divider.style !== undefined) divider.style.display = uppShowBasmaterial ? '' : 'none';
-    }
-
-    /** Toggle visibility of the Dela/Växla buttons in the concrete side. */
-    function uppToggleDelning() {
-        uppShowDelning = document.getElementById('upp-show-delning')?.checked ?? false;
-        var bar = document.getElementById('upp-dela-bar');
-        if (bar) bar.style.display = uppShowDelning ? 'flex' : 'none';
-        // Shrink block-column area to make room for the button bar when shown
-        var blocksArea = document.getElementById('upp-blocks-area') ||
-            (document.getElementById('upp-col-T') ? document.getElementById('upp-col-T').parentElement : null);
-        if (blocksArea) blocksArea.style.bottom = uppShowDelning ? '48px' : '0px';
-    }
-
-    /** Toggle answer validation. */
-    function uppToggleRattning() {
-        uppShowRattning = document.getElementById('upp-show-rattning')?.checked ?? false;
-        uppValidateIfOn();
-    }
-
-    /** Validate answer inputs if rättning is on; clear marks otherwise. */
-    function uppValidateIfOn() {
-        document.querySelectorAll('.upp-ans-input').forEach(function(el) {
-            el.classList.remove('error', 'correct');
-        });
-        if (!uppShowRattning) return;
-        uppValidate();
-    }
-
-    /** Check each answer digit against the computed correct answer and apply classes. */
-    function uppValidate() {
-        var num1 = uppGetDigitsForNum(1);
-        var num2 = uppGetDigitsForNum(2);
-        var val1 = num1[0]*1000 + num1[1]*100 + num1[2]*10 + num1[3];
-        var val2 = num2[0]*1000 + num2[1]*100 + num2[2]*10 + num2[3];
-        var correct = uppMode === 'addition' ? val1 + val2 : val1 - val2;
-
-        var correctDigits = [
-            Math.floor(Math.abs(correct) / 1000) % 10,
-            Math.floor(Math.abs(correct) / 100)  % 10,
-            Math.floor(Math.abs(correct) / 10)   % 10,
-            Math.abs(correct) % 10
-        ];
-
-        [0, 1, 2, 3].forEach(function(ci) {
-            var inp = document.querySelector('.upp-ans-input[data-col="' + ci + '"]');
-            if (!inp || inp.value === '') return;
-            var userDigit = parseInt(inp.value, 10);
-            if (userDigit === correctDigits[ci]) {
-                inp.classList.add('correct');
-            } else {
-                inp.classList.add('error');
-            }
-        });
-    }
-
-    /** Clear all inputs and blocks. */
-    function uppClearAll() {
-        document.querySelectorAll('.upp-num-input, .upp-ans-input, .upp-carry-input').forEach(function(inp) {
-            inp.value = '';
-            inp.classList.remove('error', 'correct', 'borrowed-from');
-        });
-        document.querySelectorAll('.upp-borrow-cell').forEach(function(c) {
-            c.innerHTML = '';
-            delete c.dataset.added;
-        });
-        UPP_COL_IDS.forEach(function(id) {
-            var col = document.getElementById('upp-col-' + id);
-            if (col) col.innerHTML = '';
-        });
-    }
-
-    /** Initialize (or re-initialize) the Uppställning module. */
-    function initUppstallning() {
-        uppBuildAlgoGrid();
-        uppSyncBlocks();
-    }
-
-    window.onload = initApp;
-    window.addEventListener('resize', () => {
-        if (currentView !== 'home') VIEW_REGISTRY[currentView]?.onResize?.();
-    });
+    // Lägg till symbol (+ eller -)
+    const symbol = document.createElement('div');
+    symbol.className = 'absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-bold text-gray-400 ml-4';
+    symbol.innerText = uppstallningMode === 'addition' ? '+' : '−';
+    container.style.position = 'relative';
+    container.appendChild(symbol);
+}
