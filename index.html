@@ -322,6 +322,151 @@
         /* Number line */
         #dec-nl-svg { cursor:pointer; }
         .dec-nl-segment:hover { opacity:0.5; }
+
+        /* ─── Uppställning (Interactive Algorithms) ─── */
+        #upp-concrete-panel {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23b8d4f0' stroke-width='0.8'/%3E%3C/svg%3E");
+            background-size: 40px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        #upp-abstract-panel {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23b8d4f0' stroke-width='0.8'/%3E%3C/svg%3E");
+            background-size: 40px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        /* Presenting mode: push main area right when sidebar is open */
+        .view-section.presenting #upp-split-area {
+            transition: margin-left 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+        .view-section.presenting.panel-visible #upp-split-area {
+            margin-left: 16rem;
+        }
+
+        /* Algorithm grid */
+        .upp-algo-grid {
+            display: grid;
+            grid-template-columns: 48px repeat(4, 76px);
+        }
+        .upp-hdr-op  { height: 56px; }
+        .upp-hdr-cell {
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-bottom: 3px solid #222;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 900;
+            color: #111;
+        }
+        .upp-carry-op  { height: 44px; }
+        .upp-carry-cell {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(200,200,200,0.3);
+        }
+        .upp-carry-input {
+            width: 34px;
+            height: 34px;
+            border: 1.5px solid #e57373;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Nunito', sans-serif;
+            color: #c62828;
+            background: #fff9f9;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .upp-carry-input:focus { border-color: #c62828; box-shadow: 0 0 0 2px rgba(198,40,40,0.15); }
+        .upp-op-spacer { height: 72px; }
+        .upp-digit-cell {
+            border: 1px solid rgba(180,180,180,0.25);
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upp-num-input, .upp-ans-input {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 38px;
+            font-weight: 900;
+            font-family: 'Nunito', sans-serif;
+            color: #111;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            caret-color: #5b80a5;
+        }
+        .upp-num-input:focus, .upp-ans-input:focus {
+            border-color: #5b80a5;
+            box-shadow: 0 0 0 3px rgba(91,128,165,0.2);
+        }
+        .upp-num-input.borrowed-from {
+            color: #999;
+            text-decoration: line-through;
+            text-decoration-color: #e53935;
+            text-decoration-thickness: 3px;
+        }
+        .upp-ans-input { background: #f0f8ff; border-color: #5b80a5; }
+        @keyframes uppError { 0%,100% { background:#ffebee; border-color:#e53935; } 50% { background:#ff8a80; } }
+        .upp-ans-input.error   { animation: uppError 0.5s ease; border-color: #e53935; background: #ffebee; }
+        .upp-ans-input.correct { background: #e8f5e9; border-color: #2e7d32; }
+        .upp-op-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-size: 36px;
+            font-weight: 900;
+            color: #111;
+            padding-right: 6px;
+            height: 72px;
+        }
+        .upp-line-cell  { grid-column: 1 / -1; height: 10px; border-top: 4px solid #222; }
+        .upp-borrow-op  { height: 34px; }
+        .upp-borrow-cell {
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upp-ans-op { height: 72px; }
+
+        /* Concrete block items */
+        .upp-block-item { display: inline-flex; transition: transform 0.15s, filter 0.15s; }
+        .upp-block-item.borrowable { cursor: pointer; }
+        .upp-block-item.borrowable:hover { transform: scale(1.1); filter: drop-shadow(0 3px 8px rgba(0,0,0,0.28)); }
+        .upp-num1-blocks, .upp-num2-blocks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
+            align-content: flex-start;
+        }
+        .upp-blocks-separator {
+            width: 80%;
+            height: 2px;
+            background: rgba(150,150,150,0.45);
+            border-radius: 1px;
+            margin: 4px auto;
+            flex-shrink: 0;
+        }
+        @keyframes uppBlockSplit  { 0% { transform:scale(1) rotate(0deg); opacity:1; } 60% { transform:scale(1.2) rotate(6deg); opacity:.7; } 100% { transform:scale(0) rotate(-12deg); opacity:0; } }
+        @keyframes uppBlockAppear { 0% { transform:scale(0) rotate(-15deg); opacity:0; } 100% { transform:scale(1) rotate(0deg); opacity:1; } }
+        .upp-block-split  { animation: uppBlockSplit  0.38s ease-in-out forwards; }
+        .upp-block-appear { animation: uppBlockAppear 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
     </style>
 </head>
 <body class="text-soft-text flex flex-col h-screen">
@@ -392,6 +537,11 @@
                         <div class="w-20 h-20 rounded-full bg-soft-tealLight/30 text-soft-teal flex items-center justify-center text-3xl group-hover:scale-110 transition-transform"><i class="fas fa-arrows-left-right"></i></div>
                         <h3 class="text-xl font-bold text-soft-text">Decimaltal</h3>
                         <p class="text-soft-muted text-center text-sm">Utforska positionsvärde och flytta siffror vid multiplikation och division med 10.</p>
+                    </button>
+                    <button onclick="switchView('uppstallning')" class="bg-soft-surface p-8 rounded-2xl shadow-sm hover:shadow-md border border-soft-border flex flex-col items-center justify-center gap-4 transition-all hover:-translate-y-1 group">
+                        <div class="w-20 h-20 rounded-full bg-soft-blueLight/30 text-soft-blue flex items-center justify-center text-3xl group-hover:scale-110 transition-transform"><i class="fas fa-align-right"></i></div>
+                        <h3 class="text-xl font-bold text-soft-text">Uppställning</h3>
+                        <p class="text-soft-muted text-center text-sm">Öva addition och subtraktion med uppställning och konkret tiobasmaterial sida vid sida.</p>
                     </button>
                 </div>
             </div>
@@ -1211,6 +1361,94 @@
             </div><!-- /workspace-decimaltal -->
         </section>
 
+        <!-- UPPSTÄLLNING VIEW -->
+        <section id="view-uppstallning" class="view-section flex-row h-full">
+            <!-- Floating panel (visible only in presentation / fullscreen mode) -->
+            <div id="uppstallning-float-panel" class="view-float-panel">
+                <button onclick="toggleViewSidebar('uppstallning')" aria-expanded="false" class="view-float-btn bg-white border border-soft-border rounded-xl px-3 py-2 text-sm font-bold text-soft-blue flex items-center gap-2 shadow-lg hover:bg-soft-blueLight/10 transition-colors" title="Visa/dölj kontroller">
+                    <i class="fas fa-sliders-h text-base"></i><span id="uppstallning-ctrl-lbl">Kontroller</span>
+                </button>
+                <button onclick="toggleViewFullscreen()" class="view-float-btn bg-white border border-soft-border rounded-xl px-3 py-2 text-sm font-bold text-soft-text flex items-center gap-2 shadow-lg hover:bg-soft-bg transition-colors" title="Avsluta helskärm">
+                    <i class="fas fa-compress text-base"></i> Avsluta
+                </button>
+            </div>
+
+            <!-- Sidebar -->
+            <div id="uppstallning-sidebar" data-view-panel="side" class="w-64 bg-soft-surface shadow-md z-10 p-5 flex flex-col gap-4 overflow-y-auto border-r border-soft-border shrink-0">
+                <h3 class="font-bold text-soft-muted text-sm uppercase tracking-wider">Räknesätt</h3>
+                <div class="flex gap-2">
+                    <button id="upp-btn-addition" onclick="uppSetMode('addition')" class="flex-1 py-2 px-2 rounded-xl font-bold text-sm border-2 border-soft-blue bg-soft-blue text-white transition-all">+ Addition</button>
+                    <button id="upp-btn-subtraction" onclick="uppSetMode('subtraction')" class="flex-1 py-2 px-2 rounded-xl font-bold text-sm border-2 border-soft-border bg-soft-bg text-soft-text transition-all">− Subtraktion</button>
+                </div>
+                <div class="border-t border-soft-border pt-3 flex flex-col gap-2">
+                    <h3 class="font-bold text-soft-muted text-sm uppercase tracking-wider mb-1">Visa / Dölj</h3>
+                    <label class="flex items-center gap-2 text-sm text-soft-text cursor-pointer select-none">
+                        <input type="checkbox" id="upp-show-basmaterial" class="rounded" checked onchange="uppToggleBasmaterial()">
+                        <span>Visa Basmaterial</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-soft-text cursor-pointer select-none" id="upp-delning-wrap" style="display:none">
+                        <input type="checkbox" id="upp-show-delning" class="rounded" onchange="uppToggleDelning()">
+                        <span>Visa delningsfunktion</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-soft-text cursor-pointer select-none">
+                        <input type="checkbox" id="upp-show-rattning" class="rounded" onchange="uppToggleRattning()">
+                        <span>Visa rättning</span>
+                    </label>
+                </div>
+                <button onclick="uppClearAll()" class="px-4 py-2 bg-soft-pink/20 text-soft-pink font-bold rounded-xl text-sm hover:bg-soft-pink/30 transition-colors">
+                    <i class="fas fa-trash-alt mr-1"></i> Rensa allt
+                </button>
+                <p class="text-xs text-soft-muted mt-auto">Skriv siffror i rutorna. Klicka på block för att låna (subtraktion). Minnessiffror i röda rutor (addition).</p>
+            </div>
+
+            <!-- Main split area -->
+            <div id="upp-split-area" class="flex-1 flex h-full overflow-hidden">
+
+                <!-- LEFT: Concrete blocks side -->
+                <div id="upp-concrete-panel" class="flex-1 relative overflow-hidden">
+                    <!-- Column headers (solid white, bold black text) -->
+                    <div class="absolute top-0 left-0 right-0 flex z-10" style="height:48px;">
+                        <div style="flex:1;background:white;border-bottom:3px solid #1565C0;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#111;">T</div>
+                        <div style="flex:1;background:white;border-bottom:3px solid #2E7D32;border-left:2px solid rgba(21,101,192,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#111;">H</div>
+                        <div style="flex:1;background:white;border-bottom:3px solid #92700A;border-left:2px solid rgba(46,125,50,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#111;">Ti</div>
+                        <div style="flex:1;background:white;border-bottom:3px solid #C62828;border-left:2px solid rgba(146,112,10,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#111;">E</div>
+                    </div>
+                    <!-- Block columns -->
+                    <div class="absolute flex" style="top:48px;left:0;right:0;bottom:48px;">
+                        <div id="upp-col-T"  class="flex-1 flex flex-col items-center pt-2 pb-2 gap-1 overflow-y-auto" style="border-right:2px solid rgba(21,101,192,0.15);"></div>
+                        <div id="upp-col-H"  class="flex-1 flex flex-col items-center pt-2 pb-2 gap-1 overflow-y-auto" style="border-right:2px solid rgba(46,125,50,0.15);"></div>
+                        <div id="upp-col-Ti" class="flex-1 flex flex-col items-center pt-2 pb-2 gap-1 overflow-y-auto" style="border-right:2px solid rgba(146,112,10,0.15);"></div>
+                        <div id="upp-col-E"  class="flex-1 flex flex-col items-center pt-2 pb-2 gap-1 overflow-y-auto"></div>
+                    </div>
+                    <!-- Dela/Växla buttons (hidden by default, shown by Visa delningsfunktion) -->
+                    <div id="upp-dela-bar" class="absolute flex" style="bottom:0;left:0;right:0;height:48px;display:none!important;">
+                        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+                            <button onclick="uppDelaCol(0)" class="px-2 py-1 bg-blue-100 text-blue-800 font-bold text-xs rounded-lg border border-blue-300 hover:bg-blue-200 transition-colors">Dela T</button>
+                        </div>
+                        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+                            <button onclick="uppDelaCol(1)" class="px-2 py-1 bg-green-100 text-green-800 font-bold text-xs rounded-lg border border-green-300 hover:bg-green-200 transition-colors">Dela H</button>
+                        </div>
+                        <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+                            <button onclick="uppDelaCol(2)" class="px-2 py-1 bg-yellow-100 text-yellow-800 font-bold text-xs rounded-lg border border-yellow-300 hover:bg-yellow-200 transition-colors">Dela Ti</button>
+                        </div>
+                        <div style="flex:1;"></div>
+                    </div>
+                </div>
+
+                <!-- Vertical divider -->
+                <div style="width:3px;background:#d6d4d0;flex-shrink:0;"></div>
+
+                <!-- RIGHT: Algorithm (abstract) side -->
+                <div id="upp-abstract-panel" class="flex-1 overflow-auto">
+                    <div class="flex items-center justify-center min-h-full min-w-full p-6">
+                        <div id="upp-algo-grid" class="upp-algo-grid">
+                            <!-- Built dynamically by uppBuildAlgoGrid() -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <script>
@@ -1238,6 +1476,7 @@
         initKoord();
         initPosSystem();
         initDecimaltal();
+        initUppstallning();
     }
 
     /**
@@ -1251,6 +1490,7 @@
         koordinat:  { onEnter: renderKoord,            onResize: renderKoord },
         volym:      { onEnter: updateVolumeUI },
         decimaltal: { onEnter: decOnEnter,         onResize: () => { decPositionTokens(false); decRenderNL(); } },
+        uppstallning: { onEnter: initUppstallning },
     };
 
     /**
@@ -1276,7 +1516,7 @@
             cleanup3D();
         } else {
             btnHome.classList.remove('hidden');
-            const titles = {fractions:'Bråk',numberlines:'Tallinjer',geometry:'Geometriska objekt',counting:'Räkning',clock:'Klockan',statistics:'Statistik',koordinat:'Koordinatsystem',positionssystem:'Positionssystemet',volym:'Volym',decimaltal:'Decimaltal'};
+            const titles = {fractions:'Bråk',numberlines:'Tallinjer',geometry:'Geometriska objekt',counting:'Räkning',clock:'Klockan',statistics:'Statistik',koordinat:'Koordinatsystem',positionssystem:'Positionssystemet',volym:'Volym',decimaltal:'Decimaltal',uppstallning:'Uppställning'};
             title.innerText = titles[viewId];
             // Run the view's onEnter hook if registered
             const onEnter = VIEW_REGISTRY[viewId]?.onEnter;
@@ -1292,7 +1532,8 @@
                 koordinat: 'bg-soft-purple text-white',
                 positionssystem: 'bg-soft-blue text-white',
                 volym: 'bg-soft-blue text-white',
-                decimaltal: 'bg-soft-teal text-white'
+                decimaltal: 'bg-soft-teal text-white',
+                uppstallning: 'bg-soft-blue text-white'
             };
             const colorCls = fsBtnColors[viewId] || 'bg-soft-blue text-white';
             document.getElementById('controls-area').innerHTML =
@@ -4707,6 +4948,446 @@
         decPositionTokens(false);
         decRenderBlocks();
         if (decToolVisible.numberline) decRenderNL();
+    }
+
+    // ===================== UPPSTÄLLNING =====================
+    let uppMode           = 'addition';
+    let uppShowBasmaterial = true;
+    let uppShowDelning    = false;
+    let uppShowRattning   = false;
+
+    const UPP_COL_IDS  = ['T', 'H', 'Ti', 'E'];
+    const UPP_COL_KEYS = ['tusental', 'hundratal', 'tiotal', 'ental'];
+
+    /** Return [T, H, Ti, E] digit values for num=1 or num=2 from the algo grid inputs. */
+    function uppGetDigitsForNum(num) {
+        return [0, 1, 2, 3].map(ci => {
+            const el = document.querySelector('.upp-num-input[data-num="' + num + '"][data-col="' + ci + '"]');
+            return el ? (parseInt(el.value, 10) || 0) : 0;
+        });
+    }
+
+    /** Re-render all concrete blocks based on current algo-grid inputs. */
+    function uppSyncBlocks() {
+        const num1 = uppGetDigitsForNum(1);
+        const num2 = uppGetDigitsForNum(2);
+
+        UPP_COL_IDS.forEach(function(id, ci) {
+            const col = document.getElementById('upp-col-' + id);
+            if (!col) return;
+            col.innerHTML = '';
+
+            const key = UPP_COL_KEYS[ci];
+            const n1 = num1[ci];
+            const n2 = num2[ci];
+
+            // Num-1 blocks
+            if (n1 > 0) {
+                const section = document.createElement('div');
+                section.className = 'upp-num1-blocks';
+                for (let j = 0; j < n1; j++) {
+                    const el = document.createElement('div');
+                    el.className = 'upp-block-item';
+                    if (uppMode === 'subtraction' && ci < 3) {
+                        el.classList.add('borrowable');
+                        (function(colIdx, elem, sec) {
+                            elem.addEventListener('click', function() { uppBorrowBlock(colIdx, elem, sec); });
+                        })(ci, el, section);
+                    }
+                    el.innerHTML = uppSmallBlockSVG(key);
+                    section.appendChild(el);
+                }
+                col.appendChild(section);
+            }
+
+            // Separator + Num-2 blocks (addition only)
+            if (uppMode === 'addition' && n2 > 0) {
+                const sep = document.createElement('div');
+                sep.className = 'upp-blocks-separator';
+                col.appendChild(sep);
+
+                const section2 = document.createElement('div');
+                section2.className = 'upp-num2-blocks';
+                for (let j = 0; j < n2; j++) {
+                    const el = document.createElement('div');
+                    el.className = 'upp-block-item';
+                    el.innerHTML = uppSmallBlockSVG(key);
+                    section2.appendChild(el);
+                }
+                col.appendChild(section2);
+            }
+        });
+
+        uppValidateIfOn();
+    }
+
+    /** Return smaller SVG markup for a block type (used on the concrete side). */
+    function uppSmallBlockSVG(type) {
+        if (type === 'ental') {
+            return '<svg viewBox="0 0 30 33" width="22" height="24" style="display:block">' +
+                '<polygon points="15,2 28,9 15,16 2,9" fill="#EF9A9A" stroke="#C62828" stroke-width="1"/>' +
+                '<polygon points="2,9 2,23 15,30 15,16" fill="#C62828" stroke="#C62828" stroke-width="1"/>' +
+                '<polygon points="15,16 28,9 28,23 15,30" fill="#E53935" stroke="#C62828" stroke-width="1"/>' +
+                '</svg>';
+        }
+        if (type === 'tiotal') {
+            var lines = '';
+            for (var i = 1; i <= 9; i++) {
+                lines += '<line x1="' + (6+5*i) + '" y1="' + (1+2.5*i) + '" x2="' + (1+5*i) + '" y2="' + (3.5+2.5*i) + '" stroke="#92700A" stroke-width="0.6"/>';
+                lines += '<line x1="' + (6+5*i) + '" y1="' + (6+2.5*i) + '" x2="' + (6+5*i) + '" y2="' + (1+2.5*i) + '" stroke="#92700A" stroke-width="0.6"/>';
+            }
+            return '<svg viewBox="0 0 58 35" width="58" height="35" style="display:block">' +
+                '<polygon points="56,31 51,33.5 51,28.5 56,26" fill="#F57F17" stroke="#92700A" stroke-width="0.8"/>' +
+                '<polygon points="1,8.5 51,33.5 56,31 6,6" fill="#E65100" stroke="#92700A" stroke-width="0.8"/>' +
+                '<polygon points="6,6 56,31 56,26 6,1" fill="#F9A825" stroke="#92700A" stroke-width="0.8"/>' +
+                '<polygon points="6,1 56,26 51,28.5 1,3.5" fill="#FFD54F" stroke="#92700A" stroke-width="0.8"/>' +
+                '<polygon points="6,1 1,3.5 1,8.5 6,6" fill="#F57F17" stroke="#92700A" stroke-width="0.8"/>' +
+                lines + '</svg>';
+        }
+        if (type === 'hundratal') {
+            var lines = '';
+            for (var i = 1; i <= 9; i++) {
+                lines += '<line x1="' + (60+6*i) + '" y1="' + (1+3*i) + '" x2="' + (6*i) + '" y2="' + (31+3*i) + '" stroke="#2E7D32" stroke-width="0.5"/>';
+                lines += '<line x1="' + (60-6*i) + '" y1="' + (1+3*i) + '" x2="' + (120-6*i) + '" y2="' + (31+3*i) + '" stroke="#2E7D32" stroke-width="0.5"/>';
+            }
+            return '<svg viewBox="0 0 121 68" width="61" height="34" style="display:block">' +
+                '<polygon points="120,37 60,67 60,61 120,31" fill="#2E7D32" stroke="#2E7D32" stroke-width="0.8"/>' +
+                '<polygon points="0,31 0,37 60,67 60,61" fill="#388E3C" stroke="#2E7D32" stroke-width="0.8"/>' +
+                '<polygon points="60,1 120,31 60,61 0,31" fill="#81C784" stroke="#2E7D32" stroke-width="0.8"/>' +
+                lines + '</svg>';
+        }
+        if (type === 'tusental') {
+            var lines = '';
+            for (var i = 1; i <= 9; i++) {
+                lines += '<line x1="' + (60+6*i) + '" y1="' + (1+3*i) + '" x2="' + (6*i) + '" y2="' + (31+3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
+                lines += '<line x1="' + (60-6*i) + '" y1="' + (1+3*i) + '" x2="' + (120-6*i) + '" y2="' + (31+3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
+                lines += '<line x1="' + (6*i) + '" y1="' + (31+3*i) + '" x2="' + (6*i) + '" y2="' + (91+3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
+                lines += '<line x1="0" y1="' + (31+6*i) + '" x2="60" y2="' + (61+6*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
+                lines += '<line x1="' + (60+6*i) + '" y1="' + (61-3*i) + '" x2="' + (60+6*i) + '" y2="' + (121-3*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
+                lines += '<line x1="60" y1="' + (61+6*i) + '" x2="120" y2="' + (31+6*i) + '" stroke="#1565C0" stroke-width="0.5"/>';
+            }
+            return '<svg viewBox="0 0 121 122" width="61" height="61" style="display:block">' +
+                '<polygon points="120,91 60,121 60,61 120,31" fill="#1565C0" stroke="#1565C0" stroke-width="0.8"/>' +
+                '<polygon points="0,31 0,91 60,121 60,61" fill="#1E88E5" stroke="#1565C0" stroke-width="0.8"/>' +
+                '<polygon points="60,1 120,31 60,61 0,31" fill="#64B5F6" stroke="#1565C0" stroke-width="0.8"/>' +
+                lines + '</svg>';
+        }
+        return '';
+    }
+
+    /**
+     * Borrow: remove one block from colIdx, animate split, add 10 blocks to colIdx+1.
+     * Also marks the corresponding num-1 digit in the abstract side.
+     */
+    function uppBorrowBlock(colIdx, element, container) {
+        if (uppMode !== 'subtraction') return;
+        if (colIdx >= 3) return;
+
+        var nextColIdx = colIdx + 1;
+        var nextId     = UPP_COL_IDS[nextColIdx];
+        var nextKey    = UPP_COL_KEYS[nextColIdx];
+        var nextColEl  = document.getElementById('upp-col-' + nextId);
+        if (!nextColEl) return;
+
+        element.classList.add('upp-block-split');
+        setTimeout(function() {
+            element.remove();
+
+            // Find or create a num1-blocks section in the next column
+            var nextSection = nextColEl.querySelector('.upp-num1-blocks');
+            if (!nextSection) {
+                nextSection = document.createElement('div');
+                nextSection.className = 'upp-num1-blocks';
+                nextColEl.prepend(nextSection);
+            }
+
+            // Add 10 blocks of next smaller type
+            for (var i = 0; i < 10; i++) {
+                var newEl = document.createElement('div');
+                newEl.className = 'upp-block-item upp-block-appear';
+                newEl.style.animationDelay = (i * 25) + 'ms';
+                if (nextColIdx < 3) {
+                    newEl.classList.add('borrowable');
+                    (function(ci, el, sec) {
+                        el.addEventListener('click', function() { uppBorrowBlock(ci, el, sec); });
+                    })(nextColIdx, newEl, nextSection);
+                }
+                newEl.innerHTML = uppSmallBlockSVG(nextKey);
+                nextSection.appendChild(newEl);
+            }
+
+            // Mark the abstract-side digit as borrowed-from (strikethrough)
+            var fromInput = document.querySelector('.upp-num-input[data-num="1"][data-col="' + colIdx + '"]');
+            if (fromInput) fromInput.classList.add('borrowed-from');
+
+            // Show "+10" in borrow display row for the receiving column
+            var borrowCell = document.getElementById('upp-borrow-' + nextColIdx);
+            if (borrowCell) {
+                var prev = parseInt(borrowCell.dataset.added || '0', 10);
+                borrowCell.dataset.added = prev + 10;
+                borrowCell.innerHTML = '<span style="color:#2e7d32;font-size:15px;font-weight:900;">+' + (prev + 10) + '</span>';
+            }
+        }, 380);
+    }
+
+    /**
+     * "Dela" button handler: split one block of the specified column.
+     * Takes the last block from num1 section in that column and replaces with 10 of next.
+     */
+    function uppDelaCol(colIdx) {
+        if (uppMode !== 'subtraction') return;
+        if (colIdx >= 3) return;
+
+        var id       = UPP_COL_IDS[colIdx];
+        var colEl    = document.getElementById('upp-col-' + id);
+        if (!colEl) return;
+
+        var section = colEl.querySelector('.upp-num1-blocks');
+        if (!section) return;
+        var blocks  = section.querySelectorAll('.upp-block-item:not(.upp-block-split)');
+        if (blocks.length === 0) return;
+
+        var last = blocks[blocks.length - 1];
+        uppBorrowBlock(colIdx, last, section);
+    }
+
+    /** Build (or rebuild) the algorithm grid HTML inside #upp-algo-grid. */
+    function uppBuildAlgoGrid() {
+        var grid = document.getElementById('upp-algo-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        var isAdd = uppMode === 'addition';
+
+        function cell(cls) {
+            var d = document.createElement('div');
+            d.className = cls;
+            return d;
+        }
+
+        function numInput(num, ci) {
+            var c = cell('upp-digit-cell');
+            var inp = document.createElement('input');
+            inp.className = 'upp-num-input';
+            inp.dataset.num = String(num);
+            inp.dataset.col = String(ci);
+            inp.maxLength = 1;
+            inp.type = 'text';
+            inp.inputMode = 'numeric';
+            inp.setAttribute('pattern', '[0-9]');
+            inp.addEventListener('input', uppSyncBlocks);
+            inp.addEventListener('keydown', function(e) { uppHandleDigitNav(e, '.upp-num-input[data-num="' + num + '"]', ci); });
+            c.appendChild(inp);
+            return c;
+        }
+
+        function ansInput(ci) {
+            var c = cell('upp-digit-cell');
+            var inp = document.createElement('input');
+            inp.className = 'upp-ans-input';
+            inp.dataset.col = String(ci);
+            inp.maxLength = 1;
+            inp.type = 'text';
+            inp.inputMode = 'numeric';
+            inp.setAttribute('pattern', '[0-9]');
+            inp.addEventListener('input', uppValidateIfOn);
+            inp.addEventListener('keydown', function(e) { uppHandleDigitNav(e, '.upp-ans-input', ci); });
+            c.appendChild(inp);
+            return c;
+        }
+
+        // Row 1: Column headers
+        grid.appendChild(cell('upp-hdr-op'));
+        ['T','H','Ti','E'].forEach(function(lbl) {
+            var d = cell('upp-hdr-cell');
+            d.textContent = lbl;
+            grid.appendChild(d);
+        });
+
+        // Row 2: Carry inputs (addition only)
+        if (isAdd) {
+            grid.appendChild(cell('upp-carry-op'));
+            [0, 1, 2, 3].forEach(function(ci) {
+                var c = cell('upp-carry-cell');
+                var inp = document.createElement('input');
+                inp.className = 'upp-carry-input';
+                inp.dataset.col = String(ci);
+                inp.maxLength = 1;
+                inp.type = 'text';
+                inp.inputMode = 'numeric';
+                inp.title = 'Minnessiffra';
+                inp.setAttribute('pattern', '[0-9]');
+                inp.addEventListener('keydown', function(e) { uppHandleDigitNav(e, '.upp-carry-input', ci); });
+                c.appendChild(inp);
+                grid.appendChild(c);
+            });
+        }
+
+        // Row 3: Number 1
+        grid.appendChild(cell('upp-op-spacer'));
+        [0, 1, 2, 3].forEach(function(ci) { grid.appendChild(numInput(1, ci)); });
+
+        // Row 4: Number 2 with operator sign
+        var opCell = cell('upp-op-cell');
+        var opSpan = document.createElement('span');
+        opSpan.id = 'upp-op-sign';
+        opSpan.textContent = isAdd ? '+' : '\u2212';
+        opCell.appendChild(opSpan);
+        grid.appendChild(opCell);
+        [0, 1, 2, 3].forEach(function(ci) { grid.appendChild(numInput(2, ci)); });
+
+        // Row 5: Horizontal line
+        grid.appendChild(cell('upp-line-cell'));
+
+        // Row 6: Borrow display row (subtraction only)
+        if (!isAdd) {
+            grid.appendChild(cell('upp-borrow-op'));
+            [0, 1, 2, 3].forEach(function(ci) {
+                var c = cell('upp-borrow-cell');
+                c.id = 'upp-borrow-' + ci;
+                grid.appendChild(c);
+            });
+        }
+
+        // Row 7: Answer inputs
+        grid.appendChild(cell('upp-ans-op'));
+        [0, 1, 2, 3].forEach(function(ci) { grid.appendChild(ansInput(ci)); });
+    }
+
+    /** Navigate between digit cells with arrow keys; auto-advance on digit entry. */
+    function uppHandleDigitNav(e, selector, ci) {
+        if (e.key === 'ArrowRight' && ci < 3) {
+            e.preventDefault();
+            var next = document.querySelector(selector + '[data-col="' + (ci + 1) + '"]');
+            if (next) next.focus();
+        } else if (e.key === 'ArrowLeft' && ci > 0) {
+            e.preventDefault();
+            var prev = document.querySelector(selector + '[data-col="' + (ci - 1) + '"]');
+            if (prev) prev.focus();
+        } else if (/^\d$/.test(e.key) && ci < 3) {
+            // Auto-advance after entering a digit
+            setTimeout(function() {
+                var next = document.querySelector(selector + '[data-col="' + (ci + 1) + '"]');
+                if (next) next.focus();
+            }, 40);
+        }
+    }
+
+    /** Switch between addition and subtraction modes. */
+    function uppSetMode(mode) {
+        uppMode = mode;
+
+        var addBtn = document.getElementById('upp-btn-addition');
+        var subBtn = document.getElementById('upp-btn-subtraction');
+        var activeCls   = 'flex-1 py-2 px-2 rounded-xl font-bold text-sm border-2 border-soft-blue bg-soft-blue text-white transition-all';
+        var inactiveCls = 'flex-1 py-2 px-2 rounded-xl font-bold text-sm border-2 border-soft-border bg-soft-bg text-soft-text transition-all';
+        if (addBtn) addBtn.className = mode === 'addition' ? activeCls : inactiveCls;
+        if (subBtn) subBtn.className = mode === 'subtraction' ? activeCls : inactiveCls;
+
+        // Save current number values before rebuild
+        var vals = {1: [], 2: []};
+        [1, 2].forEach(function(n) {
+            vals[n] = [0, 1, 2, 3].map(function(ci) {
+                var el = document.querySelector('.upp-num-input[data-num="' + n + '"][data-col="' + ci + '"]');
+                return el ? el.value : '';
+            });
+        });
+
+        uppBuildAlgoGrid();
+
+        // Restore number values after rebuild
+        [1, 2].forEach(function(n) {
+            [0, 1, 2, 3].forEach(function(ci) {
+                var el = document.querySelector('.upp-num-input[data-num="' + n + '"][data-col="' + ci + '"]');
+                if (el) el.value = vals[n][ci] || '';
+            });
+        });
+
+        uppSyncBlocks();
+    }
+
+    /** Toggle the left (concrete) side visibility. */
+    function uppToggleBasmaterial() {
+        uppShowBasmaterial = !!(document.getElementById('upp-show-basmaterial') || {checked: true}).checked;
+        var concrete = document.getElementById('upp-concrete-panel');
+        var divider  = concrete ? concrete.nextElementSibling : null;
+        if (concrete) concrete.style.display = uppShowBasmaterial ? '' : 'none';
+        if (divider && divider.style !== undefined) divider.style.display = uppShowBasmaterial ? '' : 'none';
+    }
+
+    /** Toggle visibility of the Dela/Växla buttons in the concrete side. */
+    function uppToggleDelning() {
+        uppShowDelning = !!(document.getElementById('upp-show-delning') || {checked: false}).checked;
+        var bar = document.getElementById('upp-dela-bar');
+        if (bar) bar.style.display = uppShowDelning ? 'flex' : 'none';
+        // Adjust block-column bottom when bar is shown
+        ['T','H','Ti','E'].forEach(function(id) {
+            var col = document.getElementById('upp-col-' + id);
+            if (col) col.parentElement.style.bottom = uppShowDelning ? '48px' : '48px';
+        });
+    }
+
+    /** Toggle answer validation. */
+    function uppToggleRattning() {
+        uppShowRattning = !!(document.getElementById('upp-show-rattning') || {checked: false}).checked;
+        uppValidateIfOn();
+    }
+
+    /** Validate answer inputs if rättning is on; clear marks otherwise. */
+    function uppValidateIfOn() {
+        document.querySelectorAll('.upp-ans-input').forEach(function(el) {
+            el.classList.remove('error', 'correct');
+        });
+        if (!uppShowRattning) return;
+        uppValidate();
+    }
+
+    /** Check each answer digit against the computed correct answer and apply classes. */
+    function uppValidate() {
+        var num1 = uppGetDigitsForNum(1);
+        var num2 = uppGetDigitsForNum(2);
+        var val1 = num1[0]*1000 + num1[1]*100 + num1[2]*10 + num1[3];
+        var val2 = num2[0]*1000 + num2[1]*100 + num2[2]*10 + num2[3];
+        var correct = uppMode === 'addition' ? val1 + val2 : val1 - val2;
+
+        var correctDigits = [
+            Math.floor(Math.abs(correct) / 1000) % 10,
+            Math.floor(Math.abs(correct) / 100)  % 10,
+            Math.floor(Math.abs(correct) / 10)   % 10,
+            Math.abs(correct) % 10
+        ];
+
+        [0, 1, 2, 3].forEach(function(ci) {
+            var inp = document.querySelector('.upp-ans-input[data-col="' + ci + '"]');
+            if (!inp || inp.value === '') return;
+            var userDigit = parseInt(inp.value, 10);
+            if (userDigit === correctDigits[ci]) {
+                inp.classList.add('correct');
+            } else {
+                inp.classList.add('error');
+            }
+        });
+    }
+
+    /** Clear all inputs and blocks. */
+    function uppClearAll() {
+        document.querySelectorAll('.upp-num-input, .upp-ans-input, .upp-carry-input').forEach(function(inp) {
+            inp.value = '';
+            inp.classList.remove('error', 'correct', 'borrowed-from');
+        });
+        document.querySelectorAll('.upp-borrow-cell').forEach(function(c) {
+            c.innerHTML = '';
+            delete c.dataset.added;
+        });
+        UPP_COL_IDS.forEach(function(id) {
+            var col = document.getElementById('upp-col-' + id);
+            if (col) col.innerHTML = '';
+        });
+    }
+
+    /** Initialize (or re-initialize) the Uppställning module. */
+    function initUppstallning() {
+        uppBuildAlgoGrid();
+        uppSyncBlocks();
     }
 
     window.onload = initApp;
